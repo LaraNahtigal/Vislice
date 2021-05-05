@@ -1,17 +1,22 @@
 import random
 
-STEVILO_DOVOLJENIH_NAPAK = 10
+STEVILO_DOVOLJENIH_NAPAK = 9
 PRAVILNA_CRKA = '+'
 PONOVLJENA_CRKA = 'o'
 NAPACNA_CRKA = '-'
+
+ZACETEK = 'Z'
 ZMAGA = 'W' 
 PORAZ = 'X'
 
 class Igra:
-    
-    def __init__(self, geslo, crke):
+
+    def __init__(self, geslo, crke=None):
         self.geslo = geslo
-        self.crke = crke[:]
+        if crke is None:
+            self.crke = []
+        else:
+            self.crke = crke
 
     def napacne_crke(self):
         return [crka for crka in self.crke if crka not in self.geslo]
@@ -40,9 +45,9 @@ class Igra:
         ugibanje = [crka.upper() for crka in self.crke]
         for crka in self.geslo:
             if crka.upper() in ugibanje:
-                delni += crka
+                delni += crka + ' '
             else:
-                delni += '_'
+                delni += '_ '
         return delni
 
     def nepravilni_ugibi(self):
@@ -65,13 +70,31 @@ class Igra:
             else:
                 return NAPACNA_CRKA
 
-with open('Vislice/besede.txt', 'r') as f:
+with open('besede.txt', encoding='utf-8') as f:
     bazen_besed = [beseda.strip().upper() for beseda in f.readlines()]
 
 def nova_igra():
     geslo = random.choice(bazen_besed)
     return Igra(geslo, []) 
 
-#testno_geslo = 'DEŽUJE'
-#testne_crke = ['A', 'E', 'I', 'O', 'U', 'D', 'J', 'K', 'Ž']
-#igra = Igra(testno_geslo, testne_crke)
+class Vislice:
+
+    def __init__(self):
+        self.igre = {}
+
+    def prost_id_igre(self):
+        if len(self.igre) == 0:
+            return 0
+        else:
+            return max(self.igre.keys()) + 1
+
+    def nova_igra(self):
+        id_igre = self.prost_id_igre()
+        igra = nova_igra()
+        self.igre[id_igre] = (igra, ZACETEK)
+        return id_igre
+
+    def ugibaj(self, id_igre, crka):
+        igra, _ = self.igre[id_igre]
+        stanje = igra.ugibaj(crka)
+        self.igre[id_igre] = (igra, stanje)
