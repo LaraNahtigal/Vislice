@@ -8,6 +8,7 @@ ZMAGA = 'W'
 PORAZ = 'X'
 
 class Igra:
+    
     def __init__(self, geslo, crke):
         self.geslo = geslo
         self.crke = crke[:]
